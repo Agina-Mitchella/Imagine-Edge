@@ -1,0 +1,8 @@
+{
+  "name": "Imagine edge solutions",
+  "description": "Kenyan-owned promotional items and printing company in Nairobi. Branded items people actually keep.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
