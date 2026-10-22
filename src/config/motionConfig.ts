@@ -31,7 +31,9 @@ export const MOTION_CONFIG = {
   // Stagger intervals in seconds
   stagger: {
     words: 0.035,
-    icons: 0.06, // 60ms apart as requested
+    icons: 0.06,
+    iconsDesktop: 0.06,
+    iconsMobile: 0.1,
     cards: 0.08,
     logos: 0.025,
     badges: 0.1,
@@ -39,11 +41,29 @@ export const MOTION_CONFIG = {
 
   // Pinned scroll distances (ScrollTrigger end properties)
   pinDistances: {
-    hero: '+=450%', // ~5 viewport heights scrub distance
-    printingMethods: '+=380%', // 5 distinct print method steps
-    selectedWork: '+=240%', // Horizontal card scrub
+    hero: '+=450%',
+    printingMethods: '+=380%',
+    selectedWork: '+=240%',
+  },
+
+  // Desktop specific settings
+  desktop: {
+    shapeParallax1: -30,
+    shapeParallax2: 40,
+    heroPin: '+=450%',
+  },
+
+  // Mobile specific settings
+  mobile: {
+    shapeParallax1: -15,
+    shapeParallax2: 20,
+    heroPin: '+=300%',
   },
 
   // Breakpoints
   desktopMin: 1024,
+  breakpoints: {
+    desktop: '(min-width: 1024px)',
+    mobile: '(max-width: 1023px)',
+  },
 };

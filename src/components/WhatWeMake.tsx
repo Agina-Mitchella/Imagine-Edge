@@ -52,23 +52,24 @@ export const WhatWeMake: React.FC<WhatWeMakeProps> = ({ onSelectCategory }) => {
       });
     });
 
-    const ctx = gsap.context(() => {
-      // Stagger in cards from below (60ms apart)
+    const mm = gsap.matchMedia();
+
+    // DESKTOP: Stagger in cards sequentially (60ms apart)
+    mm.add(MOTION_CONFIG.breakpoints.desktop, () => {
       gsap.fromTo(
         cards,
-        { y: 40, opacity: 0 },
+        { y: 36, opacity: 0 },
         {
           y: 0,
           opacity: 1,
-          stagger: MOTION_CONFIG.stagger.icons, // 60ms apart
-          duration: 0.7,
+          stagger: MOTION_CONFIG.stagger.iconsDesktop,
+          duration: 0.65,
           ease: MOTION_CONFIG.easing.reveal,
           scrollTrigger: {
             trigger: gridEl,
-            start: 'top 82%',
+            start: 'top 85%',
             once: true,
             onEnter: () => {
-              // Self-draw SVG lines as each card enters
               cards.forEach((card, idx) => {
                 const paths = card.querySelectorAll<SVGGeometryElement>(
                   'svg path, svg circle, svg line, svg polyline, svg polygon, svg rect'
@@ -76,7 +77,7 @@ export const WhatWeMake: React.FC<WhatWeMakeProps> = ({ onSelectCategory }) => {
                 gsap.to(paths, {
                   strokeDashoffset: 0,
                   duration: 0.85,
-                  delay: idx * MOTION_CONFIG.stagger.icons,
+                  delay: idx * MOTION_CONFIG.stagger.iconsDesktop,
                   ease: 'power2.out',
                 });
               });
@@ -84,10 +85,46 @@ export const WhatWeMake: React.FC<WhatWeMakeProps> = ({ onSelectCategory }) => {
           },
         }
       );
-    }, sectionRef);
+    });
+
+    // MOBILE: Stagger in cards TWO AT A TIME with self-drawing line animation
+    mm.add(MOTION_CONFIG.breakpoints.mobile, () => {
+      cards.forEach((card, idx) => {
+        const pairIndex = Math.floor(idx / 2);
+        const pairDelay = pairIndex * MOTION_CONFIG.stagger.iconsMobile;
+
+        gsap.fromTo(
+          card,
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            delay: pairDelay,
+            duration: 0.6,
+            ease: MOTION_CONFIG.easing.reveal,
+            scrollTrigger: {
+              trigger: gridEl,
+              start: 'top 88%',
+              once: true,
+              onEnter: () => {
+                const paths = card.querySelectorAll<SVGGeometryElement>(
+                  'svg path, svg circle, svg line, svg polyline, svg polygon, svg rect'
+                );
+                gsap.to(paths, {
+                  strokeDashoffset: 0,
+                  duration: 0.8,
+                  delay: pairDelay + 0.1,
+                  ease: 'power2.out',
+                });
+              },
+            },
+          }
+        );
+      });
+    });
 
     return () => {
-      ctx.revert();
+      mm.revert();
     };
   }, []);
 

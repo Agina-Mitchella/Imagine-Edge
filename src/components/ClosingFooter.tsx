@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Magnetic } from './Magnetic';
 import { downloadCompanyProfilePdf } from '../utils/pdfDownload';
 import { Logo } from './Logo';
+import { MOTION_CONFIG } from '../config/motionConfig';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -43,8 +44,10 @@ export const ClosingFooter: React.FC<ClosingFooterProps> = ({ onOpenQuote, onOpe
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
-    const ctx = gsap.context(() => {
-      // 1. Background photo parallax (moves about 15% slower than page)
+    const mm = gsap.matchMedia();
+
+    // DESKTOP: 15% photo parallax and word reveal
+    mm.add(MOTION_CONFIG.breakpoints.desktop, () => {
       if (bgPhoto) {
         gsap.fromTo(
           bgPhoto,
@@ -62,23 +65,7 @@ export const ClosingFooter: React.FC<ClosingFooterProps> = ({ onOpenQuote, onOpe
         );
       }
 
-      // 2. Heading scales from 0.9 to 1 and each word fades in with scroll
       if (heading) {
-        gsap.fromTo(
-          heading,
-          { scale: 0.9 },
-          {
-            scale: 1,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: footerEl,
-              start: 'top 85%',
-              end: 'top 30%',
-              scrub: 0.5,
-            },
-          }
-        );
-
         const words = heading.querySelectorAll('.cta-word');
         gsap.fromTo(
           words,
@@ -97,31 +84,73 @@ export const ClosingFooter: React.FC<ClosingFooterProps> = ({ onOpenQuote, onOpe
           }
         );
       }
+    });
 
-      // 3. "Get a quote" button pulses once softly when section is fully in view, then stays still
-      if (quoteBtn) {
-        ScrollTrigger.create({
-          trigger: footerEl,
-          start: 'top 50%',
-          once: true,
-          onEnter: () => {
-            gsap.fromTo(
-              quoteBtn,
-              { scale: 1 },
-              {
-                scale: 1.08,
-                duration: 0.45,
-                yoyo: true,
-                repeat: 1,
-                ease: 'power2.inOut',
-              }
-            );
-          },
-        });
+    // MOBILE: about 8% photo parallax and word-by-word reveal
+    mm.add(MOTION_CONFIG.breakpoints.mobile, () => {
+      if (bgPhoto) {
+        gsap.fromTo(
+          bgPhoto,
+          { yPercent: -4 },
+          {
+            yPercent: 4, // about 8% total shift
+            ease: 'none',
+            scrollTrigger: {
+              trigger: footerEl,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true,
+            },
+          }
+        );
       }
-    }, footerRef);
 
-    return () => ctx.revert();
+      if (heading) {
+        const words = heading.querySelectorAll('.cta-word');
+        gsap.fromTo(
+          words,
+          { opacity: 0.25, y: 8 },
+          {
+            opacity: 1,
+            y: 0,
+            stagger: 0.03,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: footerEl,
+              start: 'top 85%',
+              end: 'top 40%',
+              scrub: 0.4,
+            },
+          }
+        );
+      }
+    });
+
+    // Button subtle pulse on view
+    if (quoteBtn) {
+      ScrollTrigger.create({
+        trigger: footerEl,
+        start: 'top 65%',
+        once: true,
+        onEnter: () => {
+          gsap.fromTo(
+            quoteBtn,
+            { scale: 1 },
+            {
+              scale: 1.06,
+              duration: 0.45,
+              yoyo: true,
+              repeat: 1,
+              ease: 'power2.inOut',
+            }
+          );
+        },
+      });
+    }
+
+    return () => {
+      mm.revert();
+    };
   }, []);
 
   return (

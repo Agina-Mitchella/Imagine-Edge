@@ -2,12 +2,11 @@ import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
-  ArrowUpRight,
+  ArrowRight,
   Zap,
   Layers,
   Flag,
   Shirt,
-  Flame,
 } from 'lucide-react';
 import { PRINTING_METHODS } from '../data/siteContent';
 
@@ -29,20 +28,20 @@ export const PrintingMethods: React.FC<PrintingMethodsProps> = ({ onOpenQuote })
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
-    const cards = gridEl.querySelectorAll('.print-method-card');
+    const cards = gridEl.querySelectorAll('.print-service-card');
     const ctx = gsap.context(() => {
       gsap.fromTo(
         cards,
-        { y: 30, opacity: 0 },
+        { y: 20, opacity: 0 },
         {
           y: 0,
           opacity: 1,
-          stagger: 0.08,
-          duration: 0.6,
+          stagger: 0.06,
+          duration: 0.45,
           ease: 'power2.out',
           scrollTrigger: {
             trigger: gridEl,
-            start: 'top 85%',
+            start: 'top 88%',
           },
         }
       );
@@ -52,7 +51,7 @@ export const PrintingMethods: React.FC<PrintingMethodsProps> = ({ onOpenQuote })
   }, []);
 
   const getMethodIcon = (id: string, isLightBg: boolean) => {
-    const iconClass = `w-6 h-6 ${isLightBg ? 'text-charcoal' : 'text-white'}`;
+    const iconClass = `w-4 h-4 sm:w-5 sm:h-5 ${isLightBg ? 'text-charcoal' : 'text-white'}`;
     switch (id) {
       case 'digital':
         return <Zap className={iconClass} />;
@@ -62,8 +61,6 @@ export const PrintingMethods: React.FC<PrintingMethodsProps> = ({ onOpenQuote })
         return <Flag className={iconClass} />;
       case 'screen':
         return <Shirt className={iconClass} />;
-      case 'sublimation':
-        return <Flame className={iconClass} />;
       default:
         return <Zap className={iconClass} />;
     }
@@ -73,33 +70,33 @@ export const PrintingMethods: React.FC<PrintingMethodsProps> = ({ onOpenQuote })
     <section
       ref={sectionRef}
       id="printing-methods"
-      className="relative w-full bg-[#FAF9F6] text-charcoal py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-t border-b border-[#E8E1DA]"
+      className="relative w-full bg-[#FAF9F6] text-charcoal py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 border-t border-b border-[#E8E1DA]"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="max-w-3xl mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 mb-3 px-3 py-1 rounded-full bg-white border border-[#E8E1DA] text-xs font-semibold tracking-wider text-red uppercase">
-            <span>Print Technologies</span>
+        <div className="max-w-3xl mb-8 sm:mb-10">
+          <div className="inline-flex items-center gap-2 mb-2 px-2.5 py-0.5 rounded-full bg-white border border-[#E8E1DA] text-[11px] font-semibold tracking-wider text-red uppercase">
+            <span>Printing Services</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-charcoal tracking-tight leading-tight">
-            Five ways to print. One team to choose the right one.
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-charcoal tracking-tight leading-tight">
+            Four ways to print. One team to choose the right one.
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-charcoal/75 leading-relaxed max-w-2xl">
+          <p className="mt-2 text-xs sm:text-sm text-charcoal/70 leading-relaxed max-w-2xl">
             From rapid digital runs to heavy industrial offset and weather-resistant flex, we match your job to the right press for zero compromise on quality and cost.
           </p>
         </div>
 
-        {/* 2-Column Responsive Grid with Solid Colored Blocks */}
+        {/* Compact 2-Column Colored Cards Grid */}
         <div
           ref={gridRef}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5"
         >
           {PRINTING_METHODS.map((method, index) => {
             const isLightBg = method.id === 'flex';
             const textColor = isLightBg ? 'text-charcoal' : 'text-white';
-            const subTextColor = isLightBg ? 'text-charcoal/80' : 'text-white/85';
+            const subTextColor = isLightBg ? 'text-charcoal/85' : 'text-white/90';
             const badgeBg = isLightBg ? 'bg-black/10 text-charcoal' : 'bg-white/20 text-white';
-            const counterColor = isLightBg ? 'text-charcoal/40' : 'text-white/40';
+            const counterColor = isLightBg ? 'text-charcoal/45' : 'text-white/55';
             const iconBg = isLightBg ? 'bg-black/10' : 'bg-white/20';
             const btnBg = isLightBg
               ? 'bg-charcoal text-white hover:bg-black'
@@ -109,44 +106,43 @@ export const PrintingMethods: React.FC<PrintingMethodsProps> = ({ onOpenQuote })
               <div
                 key={method.id}
                 style={{ backgroundColor: method.accentHex }}
-                className={`print-method-card group rounded-3xl p-8 sm:p-10 shadow-[0_4px_24px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.14)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between min-h-[300px] sm:min-h-[340px] ${
-                  index === 4 ? 'md:col-span-2' : ''
-                }`}
+                className="print-service-card group rounded-2xl p-5 sm:p-6 shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_28px_rgba(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between"
               >
                 <div>
-                  {/* Top Bar: Icon, Badge & Step Counter */}
-                  <div className="flex items-center justify-between gap-4 mb-6 sm:mb-8">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-2xl ${iconBg} backdrop-blur-sm flex items-center justify-center shrink-0`}>
+                  {/* Top Bar: Icon + Badge + Number counter */}
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${iconBg} backdrop-blur-sm flex items-center justify-center shrink-0`}>
                         {getMethodIcon(method.id, isLightBg)}
                       </div>
-                      <span className={`text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full ${badgeBg}`}>
+                      <span className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${badgeBg}`}>
                         {method.badge}
                       </span>
                     </div>
-                    <span className={`font-poppins text-sm font-bold ${counterColor}`}>
+
+                    <span className={`font-poppins text-xs sm:text-sm font-bold ${counterColor}`}>
                       0{index + 1}
                     </span>
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className={`text-2xl sm:text-3xl font-extrabold ${textColor} tracking-tight mb-3`}>
+                  <h3 className={`text-lg sm:text-xl lg:text-2xl font-extrabold ${textColor} tracking-tight`}>
                     {method.name}
                   </h3>
-                  <p className={`text-sm sm:text-base ${subTextColor} leading-relaxed max-w-xl`}>
+                  <p className={`mt-1.5 text-xs sm:text-sm ${subTextColor} leading-relaxed max-w-xl`}>
                     {method.description}
                   </p>
                 </div>
 
-                {/* Bottom Action CTA */}
-                <div className="pt-8 mt-6 border-t border-black/10">
+                {/* Bottom Action: Simple Contact Link / Button */}
+                <div className="pt-4 mt-4 border-t border-black/10 flex items-center justify-between">
                   <button
                     type="button"
                     onClick={() => onOpenQuote(method.name)}
-                    className={`inline-flex items-center justify-between gap-4 px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold ${btnBg} shadow-sm transition-all duration-200 group/btn cursor-pointer`}
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold ${btnBg} shadow-sm transition-all duration-150 group/btn cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white`}
                   >
                     <span>Contact us for this</span>
-                    <ArrowUpRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
+                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5" />
                   </button>
                 </div>
               </div>

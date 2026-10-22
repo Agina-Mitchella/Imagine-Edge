@@ -53,7 +53,10 @@ export const Credentials: React.FC<CredentialsProps> = ({ onOpenProfile }) => {
       }
     });
 
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia();
+
+    // DESKTOP: Badges slide up + self-drawing checkmarks
+    mm.add(MOTION_CONFIG.breakpoints.desktop, () => {
       gsap.fromTo(
         cards,
         { y: 35, opacity: 0 },
@@ -68,7 +71,6 @@ export const Credentials: React.FC<CredentialsProps> = ({ onOpenProfile }) => {
             start: 'top 85%',
             once: true,
             onEnter: () => {
-              // As each badge lands, draw the checkmark
               cards.forEach((card, idx) => {
                 const checkPath = card.querySelector<SVGPathElement>('.badge-checkmark-path');
                 if (checkPath) {
@@ -84,9 +86,44 @@ export const Credentials: React.FC<CredentialsProps> = ({ onOpenProfile }) => {
           },
         }
       );
-    }, sectionRef);
+    });
 
-    return () => ctx.revert();
+    // MOBILE: Badges slide up + self-drawing checkmarks
+    mm.add(MOTION_CONFIG.breakpoints.mobile, () => {
+      cards.forEach((card, idx) => {
+        gsap.fromTo(
+          card,
+          { y: 25, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            delay: idx * 0.08,
+            duration: 0.55,
+            ease: MOTION_CONFIG.easing.reveal,
+            scrollTrigger: {
+              trigger: gridEl,
+              start: 'top 88%',
+              once: true,
+              onEnter: () => {
+                const checkPath = card.querySelector<SVGPathElement>('.badge-checkmark-path');
+                if (checkPath) {
+                  gsap.to(checkPath, {
+                    strokeDashoffset: 0,
+                    duration: 0.45,
+                    delay: idx * 0.08 + 0.25,
+                    ease: 'power2.out',
+                  });
+                }
+              },
+            },
+          }
+        );
+      });
+    });
+
+    return () => {
+      mm.revert();
+    };
   }, []);
 
   const getBadgeIcon = (index: number) => {

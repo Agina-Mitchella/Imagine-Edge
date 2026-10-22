@@ -1,11 +1,10 @@
-import React, { useState, useRef, useEffect, MouseEvent } from 'react';
+import React, { useState, useRef, useEffect, MouseEvent, TouchEvent } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
   Shirt,
   Flag,
   ShoppingBag,
-  Umbrella,
   Briefcase,
   Sparkles,
 } from 'lucide-react';
@@ -36,6 +35,9 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
   const [visibleIndex, setVisibleIndex] = useState(1);
   const [progressPercent, setProgressPercent] = useState(0);
 
+  const touchStartY = useRef(0);
+  const isHorizontalTouch = useRef<boolean | null>(null);
+
   const sectionRef = useRef<HTMLElement>(null);
   const cardsTrackRef = useRef<HTMLDivElement>(null);
 
@@ -45,7 +47,6 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
     'Drinkware',
     'Banners',
     'Bags',
-    'Umbrellas',
     'Desk items',
   ];
 
@@ -136,6 +137,45 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
     setIsDragging(false);
   };
 
+  // Touch Swipe Handlers for mobile
+  const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
+    if (!cardsTrackRef.current || e.touches.length !== 1) return;
+    setIsDragging(true);
+    setHasDragged(false);
+    isHorizontalTouch.current = null;
+    setStartX(e.touches[0].pageX - cardsTrackRef.current.offsetLeft);
+    touchStartY.current = e.touches[0].pageY;
+    setScrollLeftState(cardsTrackRef.current.scrollLeft);
+  };
+
+  const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
+    if (!isDragging || !cardsTrackRef.current || e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    const diffX = touch.pageX - cardsTrackRef.current.offsetLeft - startX;
+    const diffY = touch.pageY - touchStartY.current;
+
+    // Detect gesture orientation on initial displacement
+    if (isHorizontalTouch.current === null) {
+      if (Math.abs(diffX) > 6 || Math.abs(diffY) > 6) {
+        isHorizontalTouch.current = Math.abs(diffX) > Math.abs(diffY);
+      }
+    }
+
+    // Only scroll carousel horizontally if gesture is horizontal, preserving natural vertical page scroll
+    if (isHorizontalTouch.current) {
+      const walk = diffX * 1.3;
+      if (Math.abs(walk) > 6) {
+        setHasDragged(true);
+      }
+      cardsTrackRef.current.scrollLeft = scrollLeftState - walk;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    isHorizontalTouch.current = null;
+  };
+
   const scrollByAmount = (offset: number) => {
     if (cardsTrackRef.current) {
       cardsTrackRef.current.scrollBy({ left: offset, behavior: 'smooth' });
@@ -188,8 +228,6 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
         return <Flag {...iconProps} />;
       case 'bags':
         return <ShoppingBag {...iconProps} />;
-      case 'umbrellas':
-        return <Umbrella {...iconProps} />;
       case 'desk items':
         return <Briefcase {...iconProps} />;
       default:
@@ -206,11 +244,8 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Left-Aligned Heading to the same grid edge as the cards */}
         <div className="mb-8 sm:mb-10 text-left">
-          <span className="text-[12px] font-medium font-poppins uppercase tracking-widest text-[#B52026] mb-2 block">
-            Selected work
-          </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-poppins text-charcoal tracking-tight leading-tight">
-            Crafted in Nairobi for leading brands.
+            Selected work.
           </h2>
         </div>
 
@@ -241,37 +276,41 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
             })}
           </div>
 
-          {/* Prev/Next Arrows: 44px circles, white with thin border, aligned on the right, disabled at edges */}
-          <div className="hidden sm:flex items-center gap-2 shrink-0">
+          {/* Prev/Next Arrows: aligned on the right, disabled at edges, touch-friendly */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               type="button"
-              onClick={() => scrollByAmount(-404)}
+              onClick={() => scrollByAmount(window.innerWidth < 640 ? -320 : -404)}
               disabled={isAtStart}
               aria-label="Previous items"
-              className="w-[44px] h-[44px] rounded-full bg-white border border-[#E8E1DA] flex items-center justify-center transition-opacity text-charcoal hover:bg-slate-50 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
+              className="w-[36px] h-[36px] sm:w-[44px] sm:h-[44px] rounded-full bg-white border border-[#E8E1DA] flex items-center justify-center transition-opacity text-charcoal hover:bg-slate-50 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
               type="button"
-              onClick={() => scrollByAmount(404)}
+              onClick={() => scrollByAmount(window.innerWidth < 640 ? 320 : 404)}
               disabled={isAtEnd}
               aria-label="Next items"
-              className="w-[44px] h-[44px] rounded-full bg-white border border-[#E8E1DA] flex items-center justify-center transition-opacity text-charcoal hover:bg-slate-50 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
+              className="w-[36px] h-[36px] sm:w-[44px] sm:h-[44px] rounded-full bg-white border border-[#E8E1DA] flex items-center justify-center transition-opacity text-charcoal hover:bg-slate-50 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
-        {/* Drag Carousel Track: 24px gap between cards, next card peeking at right edge */}
+        {/* Drag Carousel Track: 20px-24px gap between cards, next card peeking at right edge */}
         <div
           ref={cardsTrackRef}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUpOrLeave}
           onMouseLeave={handleMouseUpOrLeave}
-          className={`flex items-stretch gap-[24px] overflow-x-auto no-scrollbar scroll-smooth py-3 px-1 will-change-scroll ${
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
+          className={`flex items-stretch gap-[20px] sm:gap-[24px] overflow-x-auto no-scrollbar scroll-smooth py-3 px-1 will-change-scroll touch-pan-x ${
             isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
           }`}
         >

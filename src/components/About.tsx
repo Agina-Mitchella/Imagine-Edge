@@ -32,8 +32,10 @@ export const About: React.FC<AboutProps> = ({ onOpenQuote }) => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
-    const ctx = gsap.context(() => {
-      // 1. Heading line-by-line masked reveal
+    const mm = gsap.matchMedia();
+
+    // DESKTOP: Heading reveal & scrubbed word highlight
+    mm.add(MOTION_CONFIG.breakpoints.desktop, () => {
       const headingLines = headingEl.querySelectorAll('.about-heading-line');
       gsap.fromTo(
         headingLines,
@@ -51,7 +53,6 @@ export const About: React.FC<AboutProps> = ({ onOpenQuote }) => {
         }
       );
 
-      // 2. Parallax drift for the background zigzag pattern
       gsap.to(sectionEl, {
         backgroundPositionY: '120px',
         ease: 'none',
@@ -63,7 +64,6 @@ export const About: React.FC<AboutProps> = ({ onOpenQuote }) => {
         },
       });
 
-      // 3. Scroll-scrubbed text highlighting: words start at 25% opacity and brighten to full
       const words = paragraphsEl.querySelectorAll('.scrub-word');
       gsap.fromTo(
         words,
@@ -80,10 +80,58 @@ export const About: React.FC<AboutProps> = ({ onOpenQuote }) => {
           },
         }
       );
-    }, sectionRef);
+    });
+
+    // MOBILE: Line-by-line heading reveal & scroll-scrubbed word highlight
+    mm.add(MOTION_CONFIG.breakpoints.mobile, () => {
+      const headingLines = headingEl.querySelectorAll('.about-heading-line');
+      gsap.fromTo(
+        headingLines,
+        { yPercent: 100, opacity: 0 },
+        {
+          yPercent: 0,
+          opacity: 1,
+          stagger: 0.1,
+          duration: 0.6,
+          ease: MOTION_CONFIG.easing.reveal,
+          scrollTrigger: {
+            trigger: headingEl,
+            start: 'top 88%',
+          },
+        }
+      );
+
+      gsap.to(sectionEl, {
+        backgroundPositionY: '50px',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: sectionEl,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1,
+        },
+      });
+
+      const words = paragraphsEl.querySelectorAll('.scrub-word');
+      gsap.fromTo(
+        words,
+        { opacity: 0.25 },
+        {
+          opacity: 1,
+          stagger: 0.015,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: paragraphsEl,
+            start: 'top 82%',
+            end: 'bottom 55%',
+            scrub: 0.4,
+          },
+        }
+      );
+    });
 
     return () => {
-      ctx.revert();
+      mm.revert();
     };
   }, []);
 

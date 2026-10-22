@@ -52,17 +52,30 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     };
   }, [isOpen]);
 
-  // Smooth entrance animation
+  const sheetRef = useRef<HTMLDivElement>(null);
+
+  // Smooth entrance animation: desktop fade + mobile bottom sheet slide up
   useEffect(() => {
     if (!isOpen) return;
 
     const modal = modalRef.current;
+    const sheet = sheetRef.current;
     if (!modal) return;
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
+    const isMobile = window.innerWidth < 768;
+
     gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'power2.out' });
+
+    if (isMobile && sheet) {
+      gsap.fromTo(
+        sheet,
+        { yPercent: 100 },
+        { yPercent: 0, duration: 0.35, ease: 'power3.out' }
+      );
+    }
   }, [isOpen]);
 
   // Handle escape key
@@ -121,13 +134,19 @@ Sent from imaginedgesolutions.co.ke`;
     <div
       ref={modalRef}
       data-lenis-prevent
-      className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-black/85 backdrop-blur-xs flex flex-col justify-start"
+      className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-black/80 backdrop-blur-xs flex flex-col justify-end md:justify-start"
       role="dialog"
       aria-modal="true"
       aria-labelledby="contact-section-heading"
     >
-      {/* Full-width section on --crimson #921B1D with faint tribal zigzag pattern at ~8% contrast */}
-      <section className="relative w-full min-h-screen bg-[#921B1D] text-white py-[64px] lg:py-[96px] px-4 sm:px-6 lg:px-8 font-poppins shrink-0">
+      {/* Mobile: Bottom sheet sliding up with rounded top / Desktop: full section */}
+      <div
+        ref={sheetRef}
+        className="relative w-full max-h-[92dvh] md:max-h-none md:min-h-screen bg-[#921B1D] text-white rounded-t-3xl md:rounded-none overflow-y-auto overscroll-contain py-6 md:py-[64px] lg:py-[96px] px-4 sm:px-6 lg:px-8 font-poppins shrink-0 shadow-2xl"
+      >
+        {/* Mobile Pull-Down Handle Bar */}
+        <div className="w-12 h-1.5 bg-white/30 rounded-full mx-auto mb-4 md:hidden" />
+
         {/* Faint tribal zigzag pattern at ~8% contrast */}
         <div
           className="absolute inset-0 pointer-events-none opacity-[0.08]"
@@ -142,10 +161,10 @@ Sent from imaginedgesolutions.co.ke`;
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 sm:top-8 sm:right-8 z-30 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white cursor-pointer"
-          aria-label="Close contact section"
+          className="absolute top-4 right-4 sm:top-8 sm:right-8 z-30 p-2.5 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 text-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white cursor-pointer"
+          aria-label="Close quote modal"
         >
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5" />
         </button>
 
         <div className="relative z-10 max-w-7xl mx-auto">
@@ -379,7 +398,7 @@ Sent from imaginedgesolutions.co.ke`;
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

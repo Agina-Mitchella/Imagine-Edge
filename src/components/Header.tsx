@@ -38,57 +38,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote, onOpenProfile, onOp
     }
   };
 
-  useEffect(() => {
-    const headerEl = headerRef.current;
-    if (!headerEl) return;
 
-    let lastScroll = 0;
-
-    const st = ScrollTrigger.create({
-      start: 'top top',
-      end: 'max',
-      onUpdate: (self) => {
-        const currentScroll = self.scroll();
-
-        if (currentScroll > 80) {
-          setIsCompact(true);
-        } else {
-          setIsCompact(false);
-        }
-
-        if (currentScroll > 100) {
-          if (self.direction === 1 && currentScroll - lastScroll > 5) {
-            gsap.to(headerEl, {
-              yPercent: -130,
-              duration: 0.35,
-              ease: 'power2.out',
-              overwrite: 'auto',
-            });
-          } else if (self.direction === -1) {
-            gsap.to(headerEl, {
-              yPercent: 0,
-              duration: 0.35,
-              ease: 'power2.out',
-              overwrite: 'auto',
-            });
-          }
-        } else {
-          gsap.to(headerEl, {
-            yPercent: 0,
-            duration: 0.25,
-            ease: 'power2.out',
-            overwrite: 'auto',
-          });
-        }
-
-        lastScroll = currentScroll;
-      },
-    });
-
-    return () => {
-      st.kill();
-    };
-  }, []);
 
   useEffect(() => {
     if (mobileMenuOpen) {
@@ -119,11 +69,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote, onOpenProfile, onOp
       {/* Floating White Card Header */}
       <header
         ref={headerRef}
-        className={`fixed top-3 sm:top-4 inset-x-3 sm:inset-x-6 lg:inset-x-8 max-w-7xl mx-auto z-40 transition-[padding,transform,box-shadow,background-color] duration-300 will-change-transform ${
-          isCompact
-            ? 'bg-white/95 backdrop-blur-md shadow-2xl py-2 sm:py-2.5 px-4 sm:px-5 border border-slate-200/90'
-            : 'bg-white shadow-xl py-3.5 sm:py-4 px-4 sm:px-6 border border-slate-100'
-        } rounded-2xl flex items-center justify-between`}
+        className="fixed top-3 sm:top-4 inset-x-3 sm:inset-x-6 lg:inset-x-8 max-w-7xl mx-auto z-40 bg-white shadow-xl py-3.5 sm:py-4 px-4 sm:px-6 border border-slate-100 rounded-2xl flex items-center justify-between"
       >
         {/* Left: Brand Wordmark / Custom Uploaded Logo */}
         <a
