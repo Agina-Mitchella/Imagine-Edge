@@ -176,6 +176,7 @@ export const TabbedGallery: React.FC<TabbedGalleryProps> = ({
     <section
       ref={sectionRef}
       id="tabbed-gallery"
+      data-header-theme="dark"
       className="relative w-full bg-charcoal text-white py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-t border-white/10"
     >
       <div className="max-w-7xl mx-auto">

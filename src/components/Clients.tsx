@@ -127,6 +127,7 @@ export const Clients: React.FC = () => {
     <section
       ref={sectionRef}
       id="clients"
+      data-header-theme="light"
       className="relative w-full bg-cool text-charcoal py-16 sm:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden select-none"
     >
       <div className="max-w-7xl mx-auto">

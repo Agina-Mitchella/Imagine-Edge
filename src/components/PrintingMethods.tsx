@@ -2,11 +2,11 @@ import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
-  ArrowRight,
   Zap,
   Layers,
   Flag,
   Shirt,
+  Sparkles,
 } from 'lucide-react';
 import { PRINTING_METHODS } from '../data/siteContent';
 
@@ -50,8 +50,8 @@ export const PrintingMethods: React.FC<PrintingMethodsProps> = ({ onOpenQuote })
     return () => ctx.revert();
   }, []);
 
-  const getMethodIcon = (id: string, isLightBg: boolean) => {
-    const iconClass = `w-4 h-4 sm:w-5 sm:h-5 ${isLightBg ? 'text-charcoal' : 'text-white'}`;
+  const getMethodIcon = (id: string, isWhiteText: boolean) => {
+    const iconClass = `w-4 h-4 sm:w-5 sm:h-5 ${isWhiteText ? 'text-white' : 'text-[#15171A]'}`;
     switch (id) {
       case 'digital':
         return <Zap className={iconClass} />;
@@ -61,6 +61,8 @@ export const PrintingMethods: React.FC<PrintingMethodsProps> = ({ onOpenQuote })
         return <Flag className={iconClass} />;
       case 'screen':
         return <Shirt className={iconClass} />;
+      case 'sublimation':
+        return <Sparkles className={iconClass} />;
       default:
         return <Zap className={iconClass} />;
     }
@@ -70,6 +72,7 @@ export const PrintingMethods: React.FC<PrintingMethodsProps> = ({ onOpenQuote })
     <section
       ref={sectionRef}
       id="printing-methods"
+      data-header-theme="dark"
       className="relative w-full bg-[#FAF9F6] text-charcoal py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 border-t border-b border-[#E8E1DA]"
     >
       <div className="max-w-7xl mx-auto">
@@ -79,41 +82,43 @@ export const PrintingMethods: React.FC<PrintingMethodsProps> = ({ onOpenQuote })
             <span>Printing Services</span>
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-charcoal tracking-tight leading-tight">
-            Four ways to print. One team to choose the right one.
+            Five ways to print. One team to choose the right one.
           </h2>
           <p className="mt-2 text-xs sm:text-sm text-charcoal/70 leading-relaxed max-w-2xl">
-            From rapid digital runs to heavy industrial offset and weather-resistant flex, we match your job to the right press for zero compromise on quality and cost.
+            From rapid digital runs to heavy industrial offset, weather-resistant flex, screen printing and sublimation, we match your job to the right press for zero compromise on quality and cost.
           </p>
         </div>
 
-        {/* Compact 2-Column Colored Cards Grid */}
+        {/* Five Colored Cards Grid (Teal, Red, Yellow, Orange, Blue) */}
         <div
           ref={gridRef}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-5"
         >
           {PRINTING_METHODS.map((method, index) => {
-            const isLightBg = method.id === 'flex';
-            const textColor = isLightBg ? 'text-charcoal' : 'text-white';
-            const subTextColor = isLightBg ? 'text-charcoal/85' : 'text-white/90';
-            const badgeBg = isLightBg ? 'bg-black/10 text-charcoal' : 'bg-white/20 text-white';
-            const counterColor = isLightBg ? 'text-charcoal/45' : 'text-white/55';
-            const iconBg = isLightBg ? 'bg-black/10' : 'bg-white/20';
-            const btnBg = isLightBg
-              ? 'bg-charcoal text-white hover:bg-black'
-              : 'bg-white text-charcoal hover:bg-white/95';
+            // White text only on blue sublimation card, charcoal #15171A text on all other cards
+            const isWhiteText = method.id === 'sublimation';
+            const textColor = isWhiteText ? 'text-white' : 'text-[#15171A]';
+            const subTextColor = isWhiteText ? 'text-white/90' : 'text-[#15171A]/85';
+            const badgeBg = isWhiteText ? 'bg-white/20 text-white' : 'bg-black/10 text-[#15171A]';
+            const counterColor = isWhiteText ? 'text-white/55' : 'text-[#15171A]/45';
+            const iconBg = isWhiteText ? 'bg-white/20' : 'bg-black/10';
+
+            // Top row: 3 cards (span 2 each), Bottom row: 2 cards (span 3 each)
+            const colSpanClass = index < 3 ? 'lg:col-span-2' : 'lg:col-span-3';
+            const mdColSpanClass = index === 4 ? 'md:col-span-2' : 'md:col-span-1';
 
             return (
               <div
                 key={method.id}
                 style={{ backgroundColor: method.accentHex }}
-                className="print-service-card group rounded-2xl p-5 sm:p-6 shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_28px_rgba(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between"
+                className={`print-service-card ${colSpanClass} ${mdColSpanClass} group rounded-2xl p-5 sm:p-6 shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_28px_rgba(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between`}
               >
                 <div>
                   {/* Top Bar: Icon + Badge + Number counter */}
                   <div className="flex items-center justify-between gap-3 mb-4">
                     <div className="flex items-center gap-2.5">
                       <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${iconBg} backdrop-blur-sm flex items-center justify-center shrink-0`}>
-                        {getMethodIcon(method.id, isLightBg)}
+                        {getMethodIcon(method.id, isWhiteText)}
                       </div>
                       <span className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${badgeBg}`}>
                         {method.badge}
@@ -129,25 +134,30 @@ export const PrintingMethods: React.FC<PrintingMethodsProps> = ({ onOpenQuote })
                   <h3 className={`text-lg sm:text-xl lg:text-2xl font-extrabold ${textColor} tracking-tight`}>
                     {method.name}
                   </h3>
-                  <p className={`mt-1.5 text-xs sm:text-sm ${subTextColor} leading-relaxed max-w-xl`}>
+                  <p className={`mt-1.5 text-xs sm:text-sm ${subTextColor} leading-relaxed`}>
                     {method.description}
                   </p>
-                </div>
-
-                {/* Bottom Action: Simple Contact Link / Button */}
-                <div className="pt-4 mt-4 border-t border-black/10 flex items-center justify-between">
-                  <button
-                    type="button"
-                    onClick={() => onOpenQuote(method.name)}
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold ${btnBg} shadow-sm transition-all duration-150 group/btn cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white`}
-                  >
-                    <span>Contact us for this</span>
-                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5" />
-                  </button>
                 </div>
               </div>
             );
           })}
+        </div>
+
+        {/* Centred CTA below the cards */}
+        <div className="mt-12 sm:mt-16 text-center max-w-xl mx-auto flex flex-col items-center">
+          <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#15171A] tracking-tight">
+            Not sure which method suits your job?
+          </h3>
+          <p className="mt-2 text-sm sm:text-base text-[#15171A]/75 font-normal">
+            Tell us what you need and we'll recommend one.
+          </p>
+          <button
+            type="button"
+            onClick={() => onOpenQuote()}
+            className="mt-6 px-8 py-3.5 rounded-full bg-[#B52026] hover:bg-[#921B1D] text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg active:scale-95 transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B52026]"
+          >
+            Get a quote
+          </button>
         </div>
       </div>
     </section>

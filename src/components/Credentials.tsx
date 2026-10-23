@@ -146,6 +146,7 @@ export const Credentials: React.FC<CredentialsProps> = ({ onOpenProfile }) => {
     <section
       ref={sectionRef}
       id="credentials"
+      data-header-theme="crimson"
       className="relative w-full bg-crimson bg-crimson-pattern text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8"
     >
       <div className="max-w-7xl mx-auto">

@@ -164,6 +164,7 @@ export const WhatWeMake: React.FC<WhatWeMakeProps> = ({ onSelectCategory }) => {
     <section
       ref={sectionRef}
       id="what-we-make"
+      data-header-theme="crimson"
       className="relative w-full bg-crimson bg-crimson-pattern text-white py-16 sm:py-20 px-4 sm:px-6 lg:px-8"
     >
       <div className="max-w-7xl mx-auto">

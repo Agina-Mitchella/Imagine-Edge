@@ -9,7 +9,10 @@ import {
   Sparkles,
 } from 'lucide-react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SELECTED_WORK_CARDS, SelectedWorkCard } from '../data/siteContent';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface SelectedWorkCarouselProps {
   onOpenLightbox: (item: {
@@ -40,6 +43,177 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
 
   const sectionRef = useRef<HTMLElement>(null);
   const cardsTrackRef = useRef<HTMLDivElement>(null);
+
+  // Letters for stacked fit-text heading
+  const LINE1_LETTERS = ['S', 'E', 'L', 'E', 'C', 'T', 'E', 'D'];
+  const LINE2_LETTERS = ['W', 'O', 'R', 'K'];
+
+  // Heading Fit-Text & Motion Refs & State
+  const headingContainerRef = useRef<HTMLDivElement>(null);
+  const line1Ref = useRef<HTMLDivElement>(null);
+  const line2Ref = useRef<HTMLDivElement>(null);
+  const line1DriftRef = useRef<HTMLDivElement>(null);
+  const line2DriftRef = useRef<HTMLDivElement>(null);
+  const measureLine1Ref = useRef<HTMLSpanElement>(null);
+  const measureLine2Ref = useRef<HTMLSpanElement>(null);
+
+  const [fontSizes, setFontSizes] = useState({
+    line1: 68,
+    line2: 120,
+  });
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [activeLetter, setActiveLetter] = useState<{ line: 1 | 2; index: number } | null>(null);
+
+  const tapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isTouchInteraction = useRef(false);
+
+  // Fit-Text calculation function: scales line 1 and line 2 to exact container width
+  const calculateFitSizes = () => {
+    const container = headingContainerRef.current;
+    const m1 = measureLine1Ref.current;
+    const m2 = measureLine2Ref.current;
+    if (!container || !m1 || !m2) return;
+
+    const containerWidth = container.clientWidth;
+    if (containerWidth <= 0) return;
+
+    const w1 = m1.getBoundingClientRect().width;
+    const w2 = m2.getBoundingClientRect().width;
+
+    if (w1 > 0 && w2 > 0) {
+      setFontSizes({
+        line1: (containerWidth / w1) * 100,
+        line2: (containerWidth / w2) * 100,
+      });
+    }
+  };
+
+  useEffect(() => {
+    calculateFitSizes();
+
+    // Recalculate once Poppins web font has loaded
+    if (typeof document !== 'undefined' && 'fonts' in document) {
+      document.fonts.ready.then(() => {
+        calculateFitSizes();
+      });
+    }
+
+    const container = headingContainerRef.current;
+    let ro: ResizeObserver | null = null;
+    if (container && typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(() => {
+        calculateFitSizes();
+      });
+      ro.observe(container);
+    }
+
+    const handleResize = () => {
+      calculateFitSizes();
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      if (ro) ro.disconnect();
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  // Heading GSAP Entrance & Drift animations
+  useEffect(() => {
+    const container = headingContainerRef.current;
+    const sectionEl = sectionRef.current;
+    if (!container || !sectionEl) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      setIsRevealed(true);
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      // 1. Entrance animation: letters slide up from behind mask, staggered 40ms
+      const letters = container.querySelectorAll('.heading-reveal-letter');
+      if (letters.length > 0) {
+        gsap.fromTo(
+          letters,
+          { yPercent: 120, opacity: 0 },
+          {
+            yPercent: 0,
+            opacity: 1,
+            duration: 0.65,
+            stagger: 0.04, // 40ms
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: container,
+              start: 'top 85%',
+              once: true,
+            },
+            onComplete: () => {
+              setIsRevealed(true);
+            },
+          }
+        );
+      }
+
+      // 2. Scroll drift: Line 1 drifts left and Line 2 drifts right (~6% width)
+      if (line1DriftRef.current) {
+        gsap.fromTo(
+          line1DriftRef.current,
+          { xPercent: 3 },
+          {
+            xPercent: -3,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sectionEl,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1,
+            },
+          }
+        );
+      }
+
+      if (line2DriftRef.current) {
+        gsap.fromTo(
+          line2DriftRef.current,
+          { xPercent: -3 },
+          {
+            xPercent: 3,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sectionEl,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1,
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // Hover and Tap handlers for letter lift and color change
+  const handleLetterTap = (line: 1 | 2, index: number) => {
+    isTouchInteraction.current = true;
+    setActiveLetter({ line, index });
+    if (tapTimeoutRef.current) clearTimeout(tapTimeoutRef.current);
+    tapTimeoutRef.current = setTimeout(() => {
+      setActiveLetter(null);
+      isTouchInteraction.current = false;
+    }, 750);
+  };
+
+  const handleMouseEnter = (line: 1 | 2, index: number) => {
+    if (isTouchInteraction.current) return;
+    setActiveLetter({ line, index });
+  };
+
+  const handleMouseLeave = () => {
+    if (isTouchInteraction.current) return;
+    setActiveLetter(null);
+  };
 
   const filterOptions = [
     'All',
@@ -239,15 +413,148 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
     <section
       ref={sectionRef}
       id="selected-work"
+      data-header-theme="light"
       className="relative w-full bg-offwhite text-charcoal py-[64px] lg:py-[96px] overflow-hidden select-none"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Left-Aligned Heading to the same grid edge as the cards */}
-        <div className="mb-8 sm:mb-10 text-left">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-poppins text-charcoal tracking-tight leading-tight">
-            Selected work.
-          </h2>
+        {/* Hidden Measurer for Exact Fit-Text Widths */}
+        <div
+          aria-hidden="true"
+          className="absolute opacity-0 pointer-events-none -z-50 select-none uppercase font-poppins font-extrabold whitespace-nowrap"
+          style={{
+            fontSize: '100px',
+            letterSpacing: '-0.04em',
+            lineHeight: '0.85',
+            left: '-9999px',
+            top: '-9999px',
+            visibility: 'hidden',
+          }}
+        >
+          <span ref={measureLine1Ref} className="inline-block whitespace-nowrap">
+            SELECTED
+          </span>
+          <span ref={measureLine2Ref} className="inline-block whitespace-nowrap">
+            WORK
+          </span>
         </div>
+
+        {/* Redesigned Stacked Fit-Text Heading */}
+        <h2 className="relative w-full mb-8 sm:mb-12 font-poppins font-extrabold uppercase select-none">
+          <span className="sr-only">SELECTED WORK</span>
+
+          <div
+            ref={headingContainerRef}
+            aria-hidden="true"
+            className="w-full flex flex-col overflow-hidden"
+          >
+            {/* Line 1: SELECTED - solid charcoal #15171A, drifts left on scroll */}
+            <div
+              ref={line1DriftRef}
+              className="w-full will-change-transform"
+              style={{ transformOrigin: 'left center' }}
+            >
+              <div
+                ref={line1Ref}
+                className="w-full flex justify-between items-baseline whitespace-nowrap font-poppins font-extrabold tracking-[-0.04em] leading-[0.85]"
+                style={{
+                  fontSize: `${fontSizes.line1}px`,
+                  color: '#15171A',
+                }}
+              >
+                {LINE1_LETTERS.map((letter, idx) => {
+                  const isActive = activeLetter?.line === 1 && activeLetter?.index === idx;
+                  const isNeighbour =
+                    activeLetter?.line === 1 && Math.abs(activeLetter.index - idx) === 1;
+
+                  const translateY = isActive ? -12 : isNeighbour ? -6 : 0;
+                  const letterColor = isActive ? '#B52026' : '#15171A';
+
+                  return (
+                    <span
+                      key={idx}
+                      className={`relative inline-block ${
+                        isRevealed ? 'overflow-visible' : 'overflow-hidden'
+                      } py-2 -my-2`}
+                      onMouseEnter={() => handleMouseEnter(1, idx)}
+                      onMouseLeave={handleMouseLeave}
+                      onClick={() => handleLetterTap(1, idx)}
+                      onTouchStart={() => handleLetterTap(1, idx)}
+                    >
+                      <span className="heading-reveal-letter inline-block will-change-transform">
+                        <span
+                          className="heading-interactive-letter inline-block select-none cursor-pointer"
+                          style={{
+                            transform: `translateY(${translateY}px)`,
+                            color: letterColor,
+                            transition:
+                              'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease',
+                            willChange: 'transform, color',
+                          }}
+                        >
+                          {letter}
+                        </span>
+                      </span>
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Line 2: WORK - outline only (2px stroke #921B1D, transparent fill), drifts right on scroll */}
+            <div
+              ref={line2DriftRef}
+              className="w-full will-change-transform"
+              style={{ transformOrigin: 'right center' }}
+            >
+              <div
+                ref={line2Ref}
+                className="w-full flex justify-between items-baseline whitespace-nowrap font-poppins font-extrabold tracking-[-0.04em] leading-[0.85]"
+                style={{
+                  fontSize: `${fontSizes.line2}px`,
+                }}
+              >
+                {LINE2_LETTERS.map((letter, idx) => {
+                  const isActive = activeLetter?.line === 2 && activeLetter?.index === idx;
+                  const isNeighbour =
+                    activeLetter?.line === 2 && Math.abs(activeLetter.index - idx) === 1;
+
+                  const translateY = isActive ? -12 : isNeighbour ? -6 : 0;
+                  const strokeColor = isActive ? '#B52026' : '#921B1D';
+                  const fillColor = isActive ? '#B52026' : 'transparent';
+
+                  return (
+                    <span
+                      key={idx}
+                      className={`relative inline-block ${
+                        isRevealed ? 'overflow-visible' : 'overflow-hidden'
+                      } py-2 -my-2`}
+                      onMouseEnter={() => handleMouseEnter(2, idx)}
+                      onMouseLeave={handleMouseLeave}
+                      onClick={() => handleLetterTap(2, idx)}
+                      onTouchStart={() => handleLetterTap(2, idx)}
+                    >
+                      <span className="heading-reveal-letter inline-block will-change-transform">
+                        <span
+                          className="heading-interactive-letter inline-block select-none cursor-pointer"
+                          style={{
+                            transform: `translateY(${translateY}px)`,
+                            WebkitTextStroke: `2px ${strokeColor}`,
+                            color: fillColor,
+                            transition:
+                              'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease, -webkit-text-stroke-color 0.2s ease',
+                            willChange: 'transform, color',
+                          }}
+                        >
+                          {letter}
+                        </span>
+                      </span>
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </h2>
 
         {/* Filter Row & Carousel Arrow Controls */}
         <div className="flex items-center justify-between gap-4 mb-8 sm:mb-10">
@@ -324,14 +631,14 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
               className="selected-work-card group w-[300px] sm:w-[380px] shrink-0 flex flex-col rounded-[16px] overflow-hidden bg-white border border-[#E8E1DA] shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(0,0,0,0.09)] transition-all duration-300 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
             >
               {/* 4:5 Showcase Slot: Fits entire product cleanly with zero clipping and high clarity */}
-              <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#FAF8F5] border-b border-[#E8E1DA]/60 flex items-center justify-center p-3 sm:p-4">
+              <div className="relative aspect-[4/5] w-full overflow-hidden bg-white border-b border-[#E8E1DA]/40 flex items-center justify-center p-3 sm:p-5">
                 {card.image ? (
                   <img
                     src={card.image}
                     alt={card.title}
                     loading="lazy"
                     decoding="async"
-                    className="max-h-full max-w-full w-auto h-auto object-contain object-center drop-shadow-[0_4px_14px_rgba(0,0,0,0.06)] transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+                    className="max-h-full max-w-full w-auto h-auto object-contain object-center drop-shadow-[0_4px_14px_rgba(0,0,0,0.06)] mix-blend-multiply transition-transform duration-300 ease-out group-hover:scale-[1.03]"
                   />
                 ) : (
                   /* Designed placeholder: soft warm-grey (#EFE9E3), faint tribal pattern at 6% opacity, thin-line icon */
