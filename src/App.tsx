@@ -48,9 +48,10 @@ export default function App() {
 
     if (!prefersReducedMotion) {
       lenis = new Lenis({
-        lerp: MOTION_CONFIG.lenis.lerp,
-        smoothWheel: MOTION_CONFIG.lenis.smoothWheel,
-        wheelMultiplier: 0.9,
+        lerp: 0.12,
+        smoothWheel: true,
+        wheelMultiplier: 1.1,
+        touchMultiplier: 1.6,
       });
 
       setGlobalLenis(lenis);

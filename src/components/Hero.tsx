@@ -4,6 +4,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Magnetic } from './Magnetic';
 import { smoothScrollTo } from '../utils/scrollHelper';
+import heroStudioImg from '../assets/images/hero_studio_showcase_1792832089576.jpg';
+import heroCraftImg from '../assets/images/hero_craft_print_1792832106126.jpg';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,10 +29,10 @@ interface FeaturedProject {
   image?: string; // Slot for real user uploaded image; defaults to faint tribal pattern on charcoal
 }
 
-const HERO_STUDIO = '/src/assets/images/hero_studio_showcase_1792832089576.jpg';
-const HERO_CRAFT = '/src/assets/images/hero_craft_print_1792832106126.jpg';
+// Creative high-definition imagery for the hero background (guaranteed on Vercel and local)
+const HERO_STUDIO = heroStudioImg || '/assets/images/hero_studio_showcase_1792832089576.jpg';
+const HERO_CRAFT = heroCraftImg || '/assets/images/hero_craft_print_1792832106126.jpg';
 
-// Creative high-definition imagery for the hero background
 const FEATURED_PROJECTS: FeaturedProject[] = [
   {
     id: 'studio-merchandise',

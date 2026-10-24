@@ -288,7 +288,7 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
     );
   }, [selectedFilter]);
 
-  // Drag Carousel Mouse Handlers
+  // Drag Carousel Mouse Handlers (Desktop click & drag)
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     if (!cardsTrackRef.current) return;
     setIsDragging(true);
@@ -301,7 +301,7 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
     if (!isDragging || !cardsTrackRef.current) return;
     e.preventDefault();
     const x = e.pageX - cardsTrackRef.current.offsetLeft;
-    const walk = (x - startX) * 1.35;
+    const walk = (x - startX) * 1.5;
     if (Math.abs(walk) > 5) {
       setHasDragged(true);
     }
@@ -312,43 +312,21 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
     setIsDragging(false);
   };
 
-  // Touch Swipe Handlers for mobile
-  const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
-    if (!cardsTrackRef.current || e.touches.length !== 1) return;
-    setIsDragging(true);
-    setHasDragged(false);
-    isHorizontalTouch.current = null;
-    setStartX(e.touches[0].pageX - cardsTrackRef.current.offsetLeft);
-    touchStartY.current = e.touches[0].pageY;
-    setScrollLeftState(cardsTrackRef.current.scrollLeft);
+  // Mobile fast interactive touch tracking (leaves momentum to GPU while preventing click on swipe)
+  const isSwipingRef = useRef(false);
+
+  const handleTouchStart = () => {
+    isSwipingRef.current = false;
   };
 
-  const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
-    if (!isDragging || !cardsTrackRef.current || e.touches.length !== 1) return;
-    const touch = e.touches[0];
-    const diffX = touch.pageX - cardsTrackRef.current.offsetLeft - startX;
-    const diffY = touch.pageY - touchStartY.current;
-
-    // Detect gesture orientation on initial displacement
-    if (isHorizontalTouch.current === null) {
-      if (Math.abs(diffX) > 6 || Math.abs(diffY) > 6) {
-        isHorizontalTouch.current = Math.abs(diffX) > Math.abs(diffY);
-      }
-    }
-
-    // Only scroll carousel horizontally if gesture is horizontal, preserving natural vertical page scroll
-    if (isHorizontalTouch.current) {
-      const walk = diffX * 1.3;
-      if (Math.abs(walk) > 6) {
-        setHasDragged(true);
-      }
-      cardsTrackRef.current.scrollLeft = scrollLeftState - walk;
-    }
+  const handleTouchMove = () => {
+    isSwipingRef.current = true;
   };
 
   const handleTouchEnd = () => {
-    setIsDragging(false);
-    isHorizontalTouch.current = null;
+    setTimeout(() => {
+      isSwipingRef.current = false;
+    }, 100);
   };
 
   const scrollByAmount = (offset: number) => {
@@ -358,7 +336,7 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
   };
 
   const handleCardClick = (card: SelectedWorkCard) => {
-    if (hasDragged) return;
+    if (hasDragged || isSwipingRef.current) return;
     onOpenLightbox({
       title: card.title,
       client: card.client,
@@ -366,7 +344,6 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
       image: card.image || '',
       category: card.category,
       materials: card.materials,
-      leadTime: card.leadTime,
     });
   };
 
@@ -597,17 +574,17 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
             </button>
             <button
               type="button"
-              onClick={() => scrollByAmount(window.innerWidth < 640 ? 320 : 404)}
+              onClick={() => scrollByAmount(window.innerWidth < 640 ? 296 : 404)}
               disabled={isAtEnd}
               aria-label="Next items"
-              className="w-[36px] h-[36px] sm:w-[44px] sm:h-[44px] rounded-full bg-white border border-[#E8E1DA] flex items-center justify-center transition-opacity text-charcoal hover:bg-slate-50 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
+              className="w-[36px] h-[36px] sm:w-[44px] sm:h-[44px] rounded-full bg-white border border-[#E8E1DA] flex items-center justify-center transition-opacity text-charcoal hover:bg-slate-50 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red active:scale-95"
             >
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
-        {/* Drag Carousel Track: 20px-24px gap between cards, next card peeking at right edge */}
+        {/* Drag & Fast Momentum Carousel Track: 16px gap on mobile with snap-points for high-speed flicking */}
         <div
           ref={cardsTrackRef}
           onMouseDown={handleMouseDown}
@@ -618,7 +595,8 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchEnd}
-          className={`flex items-stretch gap-[20px] sm:gap-[24px] overflow-x-auto no-scrollbar scroll-smooth py-3 px-1 will-change-scroll touch-pan-x ${
+          style={{ WebkitOverflowScrolling: 'touch' }}
+          className={`flex items-stretch gap-[16px] sm:gap-[24px] overflow-x-auto no-scrollbar scroll-smooth py-3 px-1 will-change-scroll overscroll-x-contain snap-x snap-mandatory sm:snap-none ${
             isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
           }`}
         >
@@ -629,7 +607,7 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
               tabIndex={0}
               role="button"
               aria-label={`View ${card.title}`}
-              className="selected-work-card group w-[300px] sm:w-[380px] shrink-0 flex flex-col rounded-[16px] overflow-hidden bg-white border border-[#E8E1DA] shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(0,0,0,0.09)] transition-all duration-300 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
+              className="selected-work-card group w-[275px] sm:w-[380px] shrink-0 flex flex-col rounded-[16px] overflow-hidden bg-white border border-[#E8E1DA] shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(0,0,0,0.09)] active:scale-[0.985] transition-all duration-200 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red snap-start sm:snap-align-none select-none cursor-pointer"
             >
               {/* 4:5 Showcase Slot: Fits entire product cleanly with zero clipping and high clarity */}
               <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#FAF9F6] border-b border-[#E8E1DA]/60 flex items-center justify-center p-3 sm:p-5">

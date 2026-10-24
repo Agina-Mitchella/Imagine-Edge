@@ -164,7 +164,7 @@ export const ClosingFooter: React.FC<ClosingFooterProps> = ({ onOpenQuote, onOpe
       <div className="absolute inset-0 z-0 overflow-hidden">
         <img
           ref={bgPhotoRef}
-          src="/src/assets/images/print_floor_workshop_1792308346126.jpg"
+          src="/assets/images/print_floor_workshop_1792308346126.jpg"
           alt="Imaginedge Solutions Print Workshop"
           loading="lazy"
           referrerPolicy="no-referrer"
