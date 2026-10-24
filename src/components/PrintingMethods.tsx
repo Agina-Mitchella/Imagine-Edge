@@ -85,7 +85,7 @@ export const PrintingMethods: React.FC<PrintingMethodsProps> = ({ onOpenQuote })
             Five ways to print. One team to choose the right one.
           </h2>
           <p className="mt-2 text-xs sm:text-sm text-charcoal/70 leading-relaxed max-w-2xl">
-            From rapid digital runs to heavy industrial offset, weather-resistant flex, screen printing and sublimation, we match your job to the right press for zero compromise on quality and cost.
+            Small batch or big order, a banner or a hoodie, we’ll work out how to print it. We match your job for zero compromise on quality and cost.
           </p>
         </div>
 

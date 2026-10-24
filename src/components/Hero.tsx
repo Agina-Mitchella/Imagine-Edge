@@ -27,16 +27,24 @@ interface FeaturedProject {
   image?: string; // Slot for real user uploaded image; defaults to faint tribal pattern on charcoal
 }
 
-const HERO_IMAGE = '/assets/aistudio/IMG_9373_c2059a32.jpeg';
+const HERO_STUDIO = '/src/assets/images/hero_studio_showcase_1792832089576.jpg';
+const HERO_CRAFT = '/src/assets/images/hero_craft_print_1792832106126.jpg';
 
-// Featured project hero image as provided by user
+// Creative high-definition imagery for the hero background
 const FEATURED_PROJECTS: FeaturedProject[] = [
   {
-    id: 'imaginedge-stationery',
-    client: 'Imaginedge Solutions',
-    product: 'Executive notebooks & branded stationery',
-    caption: 'Imaginedge · Executive notebooks & stationery',
-    image: HERO_IMAGE,
+    id: 'studio-merchandise',
+    client: 'Imaginedge Executive Suite',
+    product: 'Branded tumblers, stationery, polo & tote',
+    caption: 'Executive Merchandise Showcase',
+    image: HERO_STUDIO,
+  },
+  {
+    id: 'craft-printing',
+    client: 'Imaginedge Print Workshop',
+    product: 'Precision printing press and production studio',
+    caption: 'Precision Print Press & Production',
+    image: HERO_CRAFT,
   },
 ];
 
@@ -163,20 +171,11 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
                 isActive ? 'opacity-100 z-10' : 'opacity-0 z-0'
               }`}
             >
-              {/* Full-bleed product image */}
+              {/* Full-bleed product image - razor-sharp and crystal clear */}
               <img
                 src={project.image}
                 alt={project.caption}
-                className="w-full h-full object-cover object-center"
-              />
-
-              {/* Soft dark gradient for maximum legibility */}
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    'linear-gradient(to right, rgba(21,23,26,0.65) 0%, rgba(21,23,26,0.35) 55%, rgba(21,23,26,0.15) 100%)',
-                }}
+                className="w-full h-full object-cover object-center will-change-transform filter contrast-[1.02] brightness-[1.01]"
               />
             </div>
           );
@@ -191,42 +190,51 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
         {/* Frosted Glass Card (left-aligned desktop max 620px, full-width on mobile minus 16px margins) */}
         <div
           ref={cardRef}
-          className="w-[calc(100%-16px)] sm:w-full max-w-[620px] mx-auto sm:mx-0 p-7 sm:p-10 rounded-[24px] bg-[#15171A]/55 backdrop-blur-[18px] border border-white/12 shadow-2xl"
+          className="w-[calc(100%-16px)] sm:w-full max-w-[620px] mx-auto sm:mx-0 p-7 sm:p-10 rounded-[24px] bg-[#15171A]/70 backdrop-blur-[20px] border border-white/15 shadow-2xl"
         >
-          {/* Eyebrow: NAIROBI, KENYA in 13px Poppins SemiBold, #F0C020, letter-spacing 0.14em */}
+          {/* Eyebrow: "Your promotional items guru" in 13px Poppins SemiBold, #F0C020, letter-spacing 0.14em */}
           <p className="font-poppins font-semibold uppercase text-[13px] tracking-[0.14em] text-[#F0C020] mb-3 sm:mb-4">
-            NAIROBI, KENYA
+            Your promotional items guru
           </p>
 
-          {/* Headline: Poppins ExtraBold, clamp(2.25rem, 5vw, 4.25rem), leading 1.05, tracking -0.02em, 4px #B52026 underline under "actually" */}
+          {/* Headline: The single <h1> on page, accessible to screen readers & crawlers with red underline under "branded" */}
           <h1
             ref={headlineRef}
-            className="font-poppins font-extrabold text-white text-[clamp(2.25rem,5vw,4.25rem)] leading-[1.05] tracking-[-0.02em]"
+            className="font-poppins font-extrabold text-white text-[clamp(2.15rem,4.6vw,3.85rem)] leading-[1.08] tracking-[-0.02em]"
           >
-            <span className="block overflow-hidden">
-              <span className="hero-reveal-line block">Branded items</span>
+            {/* Screen reader and crawler readable full sentence */}
+            <span className="sr-only">
+              Promotional items and branded printing in Nairobi.
             </span>
-            <span className="block overflow-hidden">
-              <span className="hero-reveal-line block">
-                people{' '}
-                <span className="relative inline-block pb-1">
-                  actually
-                  <span
-                    className="absolute left-0 bottom-0.5 w-full h-[4px] bg-[#B52026] rounded-full"
-                    aria-hidden="true"
-                  />
-                </span>{' '}
-                keep.
+
+            {/* Visual animated lines */}
+            <span aria-hidden="true" className="block">
+              <span className="block overflow-hidden">
+                <span className="hero-reveal-line block">
+                  Promotional items and
+                </span>
+              </span>
+              <span className="block overflow-hidden">
+                <span className="hero-reveal-line block">
+                  <span className="relative inline-block pb-1">
+                    branded
+                    <span
+                      className="absolute left-0 bottom-0.5 w-full h-[4px] bg-[#B52026] rounded-full"
+                      aria-hidden="true"
+                    />
+                  </span>{' '}
+                  printing in Nairobi.
+                </span>
               </span>
             </span>
           </h1>
 
-          {/* Paragraph (white at 85%, 18px Poppins) */}
+          {/* Subline: (white at 85%, 18px Poppins) */}
           <p
             ref={paragraphRef}
             className="font-poppins text-white/85 text-base sm:text-[18px] leading-relaxed mt-4 sm:mt-5 max-w-xl"
           >
-            Garments, drinkware, banners, bags and corporate gifts. Designed, printed and delivered by a Kenyan-owned team.
+            We design, print and deliver garments, drinkware, banners, bags and corporate gifts for organisations and institutions.
           </p>
 
           {/* Buttons: solid #B52026 pill "Get a quote" with arrow & outlined white pill "See our work" */}
@@ -261,18 +269,10 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
         </div>
       </div>
 
-      {/* Caption Chip & Photo Slider Controls at Bottom Right */}
-      <div className="absolute top-26 right-3 sm:top-auto sm:bottom-6 sm:right-6 z-30 flex items-center gap-2 sm:gap-3 max-w-[calc(100%-24px)]">
-        {/* Caption Chip */}
-        <div
-          className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-full bg-[#15171A]/55 backdrop-blur-[18px] border border-white/12 text-white font-poppins text-xs sm:text-sm font-medium shadow-lg select-none truncate"
-          title={currentProject.caption}
-        >
-          <span>{currentProject.caption}</span>
-        </div>
-
-        {/* Slide Dots (when multiple projects exist) */}
-        {FEATURED_PROJECTS.length > 1 && (
+      {/* Photo Slider Controls at Bottom Right (only when multiple projects exist) */}
+      {FEATURED_PROJECTS.length > 1 && (
+        <div className="absolute top-26 right-3 sm:top-auto sm:bottom-6 sm:right-6 z-30 flex items-center gap-2 sm:gap-3 max-w-[calc(100%-24px)]">
+          {/* Slide Dots */}
           <div
             className="hidden md:flex items-center gap-1.5 px-2.5 py-2 rounded-full bg-[#15171A]/55 backdrop-blur-[18px] border border-white/12 shadow-lg"
             role="tablist"
@@ -295,10 +295,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
               );
             })}
           </div>
-        )}
 
-        {/* Prev & Next 44px Arrow Buttons (when multiple projects exist) */}
-        {FEATURED_PROJECTS.length > 1 && (
+          {/* Prev & Next 44px Arrow Buttons */}
           <div className="flex items-center gap-1.5">
             <button
               type="button"
@@ -319,8 +317,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </section>
   );
 };

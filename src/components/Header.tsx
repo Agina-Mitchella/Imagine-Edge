@@ -142,7 +142,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
     { label: 'What we make', href: '#what-we-make' },
     { label: 'Printing', href: '#printing-methods' },
     { label: 'Work', href: '#selected-work' },
-    { label: 'Clients', href: '#clients' },
     { label: 'About', href: '#about' },
   ];
 

@@ -7,11 +7,8 @@ import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { WhatWeMake } from './components/WhatWeMake';
 import { About } from './components/About';
-import { TabbedGallery } from './components/TabbedGallery';
 import { PrintingMethods } from './components/PrintingMethods';
 import { SelectedWorkCarousel } from './components/SelectedWorkCarousel';
-import { Clients } from './components/Clients';
-import { Credentials } from './components/Credentials';
 import { ClosingFooter } from './components/ClosingFooter';
 import { QuoteModal } from './components/QuoteModal';
 import { LightboxModal } from './components/LightboxModal';
@@ -129,7 +126,7 @@ export default function App() {
   };
 
   const handleSelectWhatWeMakeCategory = (_categoryId: string) => {
-    // Category selected from WhatWeMake
+    smoothScrollTo('#selected-work', -80);
   };
 
   return (
@@ -143,7 +140,7 @@ export default function App() {
       {/* Desktop Custom Cursor */}
       <CustomCursor />
 
-      {/* 1. HEADER: floating white card with responsive shrink, scroll-hide and magnetic CTA */}
+      {/* 1. HEADER: floating compact bar with dynamic section-based theme switching */}
       <Header
         onOpenQuote={() => handleOpenQuote()}
         onOpenProfile={() => setIsProfileOpen(true)}
@@ -152,22 +149,22 @@ export default function App() {
 
       {/* Main Content Sections (Strict Page Structure Order - Clean Hard Edges) */}
       <main className="flex-1 w-full flex flex-col">
-        {/* 2. HERO: dark slider with word-by-word reveal, drifting 3D shapes, and desktop scrub pinning */}
+        {/* 2. HERO: dark slider with clear full-bleed photo & left frosted glass card */}
         <Hero
           onOpenQuote={() => handleOpenQuote()}
           onOpenLightbox={handleOpenLightbox}
         />
 
-        {/* 3. WHAT WE MAKE: icon grid with 60ms stagger and self-drawing SVG icons */}
+        {/* 3. WHAT WE MAKE: crimson icon grid */}
         <WhatWeMake onSelectCategory={handleSelectWhatWeMakeCategory} />
 
-        {/* 4. ABOUT: two columns with line-by-line masked heading and scrubbed text highlighting */}
+        {/* 4. ABOUT: crimson two columns */}
         <About onOpenQuote={() => handleOpenQuote()} />
 
-        {/* 5. FIVE WAYS TO PRINT: desktop signature sequence with background flood wipe & animated visuals */}
+        {/* 5. FIVE WAYS TO PRINT: dark methods */}
         <PrintingMethods onOpenQuote={handleOpenQuote} />
 
-        {/* 6. SELECTED WORK: dual drifting headings and desktop horizontal-scroll scrub */}
+        {/* 6. SELECTED WORK: light fit-text heading & carousel */}
         <SelectedWorkCarousel onOpenLightbox={handleOpenLightbox} />
       </main>
 

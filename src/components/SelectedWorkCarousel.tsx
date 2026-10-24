@@ -224,10 +224,11 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
     'Desk items',
   ];
 
-  const filteredCards =
+  const filteredCards = (
     selectedFilter === 'All'
       ? SELECTED_WORK_CARDS
-      : SELECTED_WORK_CARDS.filter((c) => c.filterCategory === selectedFilter);
+      : SELECTED_WORK_CARDS.filter((c) => c.filterCategory === selectedFilter)
+  ).filter((c) => Boolean(c.image && c.image.trim() !== ''));
 
   // Monitor scroll position to update arrows and progress counter
   const updateScrollState = () => {
@@ -631,30 +632,14 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
               className="selected-work-card group w-[300px] sm:w-[380px] shrink-0 flex flex-col rounded-[16px] overflow-hidden bg-white border border-[#E8E1DA] shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(0,0,0,0.09)] transition-all duration-300 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
             >
               {/* 4:5 Showcase Slot: Fits entire product cleanly with zero clipping and high clarity */}
-              <div className="relative aspect-[4/5] w-full overflow-hidden bg-white border-b border-[#E8E1DA]/40 flex items-center justify-center p-3 sm:p-5">
-                {card.image ? (
-                  <img
-                    src={card.image}
-                    alt={card.title}
-                    loading="lazy"
-                    decoding="async"
-                    className="max-h-full max-w-full w-auto h-auto object-contain object-center drop-shadow-[0_4px_14px_rgba(0,0,0,0.06)] mix-blend-multiply transition-transform duration-300 ease-out group-hover:scale-[1.03]"
-                  />
-                ) : (
-                  /* Designed placeholder: soft warm-grey (#EFE9E3), faint tribal pattern at 6% opacity, thin-line icon */
-                  <div className="w-full h-full relative flex items-center justify-center bg-[#EFE9E3]">
-                    <div
-                      className="absolute inset-0 pointer-events-none opacity-[0.06]"
-                      style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0 L40 20 L30 20 L20 10 L10 20 L0 20 Z M20 20 L40 40 L30 40 L20 30 L10 40 L0 40 Z' fill='%23921B1D' /%3E%3C/svg%3E")`,
-                        backgroundSize: '36px 36px',
-                      }}
-                    />
-                    <div className="relative z-10 flex items-center justify-center">
-                      {renderCategoryIcon(card.category)}
-                    </div>
-                  </div>
-                )}
+              <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#FAF9F6] border-b border-[#E8E1DA]/60 flex items-center justify-center p-3 sm:p-5">
+                <img
+                  src={card.image}
+                  alt={card.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="max-h-full max-w-full w-auto h-auto object-contain object-center transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+                />
               </div>
 
               {/* Compact Text Block: 20px padding, category in 12px uppercase Poppins Medium, title in 18px Poppins SemiBold */}
