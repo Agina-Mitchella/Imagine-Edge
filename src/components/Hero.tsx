@@ -5,7 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Magnetic } from './Magnetic';
 import { smoothScrollTo } from '../utils/scrollHelper';
 import heroStudioImg from '../assets/images/hero_studio_showcase_1792832089576.jpg';
-import heroCraftImg from '../assets/images/hero_craft_print_1792832106126.jpg';
+import heroFlatlayImg from '../assets/images/hero_studio_flatlay_1793005975591.jpg';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -26,12 +26,12 @@ interface FeaturedProject {
   client: string;
   product: string;
   caption: string;
-  image?: string; // Slot for real user uploaded image; defaults to faint tribal pattern on charcoal
+  image?: string;
 }
 
 // Creative high-definition imagery for the hero background (guaranteed on Vercel and local)
 const HERO_STUDIO = heroStudioImg || '/assets/images/hero_studio_showcase_1792832089576.jpg';
-const HERO_CRAFT = heroCraftImg || '/assets/images/hero_craft_print_1792832106126.jpg';
+const HERO_FLATLAY = heroFlatlayImg || '/assets/images/hero_studio_flatlay_1793005975591.jpg';
 
 const FEATURED_PROJECTS: FeaturedProject[] = [
   {
@@ -42,11 +42,11 @@ const FEATURED_PROJECTS: FeaturedProject[] = [
     image: HERO_STUDIO,
   },
   {
-    id: 'craft-printing',
-    client: 'Imaginedge Print Workshop',
-    product: 'Precision printing press and production studio',
-    caption: 'Precision Print Press & Production',
-    image: HERO_CRAFT,
+    id: 'studio-flatlay',
+    client: 'Imaginedge Premium Collection',
+    product: 'Thermal flask, corporate polo, leather journal & canvas tote',
+    caption: 'Premium Corporate Gifting & Merchandise',
+    image: HERO_FLATLAY,
   },
 ];
 
@@ -159,10 +159,10 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
       ref={heroContainerRef}
       id="top"
       data-header-theme="dark"
-      className="relative m-2 sm:m-4 rounded-[28px] overflow-hidden bg-[#15171A] text-white h-[calc(100svh-16px)] sm:h-[calc(100svh-32px)] min-h-[640px] flex flex-col justify-between select-none shadow-2xl"
+      className="relative m-2 sm:m-4 rounded-[28px] overflow-hidden bg-[#15171A] text-white min-h-[600px] min-h-[100svh] h-auto lg:h-[calc(100svh-32px)] flex flex-col justify-between select-none shadow-2xl pb-20 md:pb-0"
       aria-label="Hero showcase"
     >
-      {/* Background Photo Slider with soft dark gradient & charcoal tribal fallback */}
+      {/* Background Photo Slider with soft dark gradient & crystal clear merchandise showcases */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         {FEATURED_PROJECTS.map((project, idx) => {
           const isActive = idx === currentSlideIndex;
@@ -184,25 +184,25 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
         })}
       </div>
 
-      {/* Floating Header Clearance Spacer (Guarantees >= 24px clearance below floating header) */}
-      <div className="relative z-10 w-full pt-24 sm:pt-28" aria-hidden="true" />
+      {/* Floating Header Clearance Spacer */}
+      <div className="relative z-10 w-full pt-20 sm:pt-28" aria-hidden="true" />
 
       {/* Main Content Area: Centred vertically on desktop, bottom-aligned on mobile */}
-      <div className="relative z-20 flex-1 flex flex-col justify-end sm:justify-center px-2 sm:px-8 lg:px-12 pb-4 sm:pb-8">
-        {/* Frosted Glass Card (left-aligned desktop max 620px, full-width on mobile minus 16px margins) */}
+      <div className="relative z-20 flex-1 flex flex-col justify-end lg:justify-center px-3 sm:px-8 lg:px-12 pb-4 sm:pb-8">
+        {/* Frosted Glass Card: 28px padding on mobile, 40px top padding on desktop */}
         <div
           ref={cardRef}
-          className="w-[calc(100%-16px)] sm:w-full max-w-[620px] mx-auto sm:mx-0 p-7 sm:p-10 rounded-[24px] bg-[#15171A]/70 backdrop-blur-[20px] border border-white/15 shadow-2xl"
+          className="w-full max-w-[620px] mx-auto sm:mx-0 p-7 sm:p-10 lg:pt-10 rounded-[24px] bg-[#15171A]/70 backdrop-blur-[20px] border border-white/15 shadow-2xl"
         >
-          {/* Eyebrow: "Your promotional items guru" in 13px Poppins SemiBold, #F0C020, letter-spacing 0.14em */}
-          <p className="font-poppins font-semibold uppercase text-[13px] tracking-[0.14em] text-[#F0C020] mb-3 sm:mb-4">
+          {/* Eyebrow: 12px, letter-spacing 0.12em with 28px padding around it from card */}
+          <p className="font-poppins font-semibold uppercase text-[12px] sm:text-[13px] tracking-[0.12em] sm:tracking-[0.14em] text-[#F0C020] mb-3 sm:mb-4">
             Your promotional items guru
           </p>
 
           {/* Headline: The single <h1> on page, accessible to screen readers & crawlers with red underline under "branded" */}
           <h1
             ref={headlineRef}
-            className="font-poppins font-extrabold text-white text-[clamp(2.15rem,4.6vw,3.85rem)] leading-[1.08] tracking-[-0.02em]"
+            className="font-poppins font-extrabold text-white text-[clamp(2rem,8vw,2.75rem)] lg:text-[clamp(2.35rem,4.2vw,3.75rem)] leading-[1.08] tracking-[-0.02em] max-w-[540px] [text-wrap:balance]"
           >
             {/* Screen reader and crawler readable full sentence */}
             <span className="sr-only">
@@ -231,7 +231,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
             </span>
           </h1>
 
-          {/* Subline: (white at 85%, 18px Poppins) */}
+          {/* Subline */}
           <p
             ref={paragraphRef}
             className="font-poppins text-white/85 text-base sm:text-[18px] leading-relaxed mt-4 sm:mt-5 max-w-xl"
@@ -239,44 +239,40 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
             We design, print and deliver garments, drinkware, banners, bags and corporate gifts for organisations and institutions.
           </p>
 
-          {/* Buttons: solid #B52026 pill "Get a quote" with arrow & outlined white pill "See our work" */}
+          {/* Buttons: full width of card on mobile, same height (52px), 12px gap, 24px space below */}
           <div
             ref={buttonsRef}
-            className="mt-6 sm:mt-8 flex flex-wrap items-center gap-3 sm:gap-4"
+            className="mt-6 sm:mt-8 flex flex-col md:flex-row items-stretch md:items-center gap-[12px] md:gap-4 pb-6 md:pb-0"
           >
-            <Magnetic strength={0.25}>
-              <button
-                type="button"
-                onClick={() => onOpenQuote()}
-                className="font-poppins font-bold text-xs sm:text-sm text-white bg-[#B52026] hover:bg-[#9C1A1F] active:scale-95 px-6 sm:px-8 py-3.5 sm:py-4 rounded-full inline-flex items-center gap-2.5 transition-all shadow-lg hover:shadow-red-900/40 cursor-pointer"
-              >
-                <span>Get a quote</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </Magnetic>
+            <button
+              type="button"
+              onClick={() => onOpenQuote()}
+              className="w-full md:w-auto h-[52px] font-poppins font-bold text-sm text-white bg-[#B52026] hover:bg-[#9C1A1F] active:scale-[0.98] px-7 rounded-full inline-flex items-center justify-center gap-2.5 transition-all shadow-lg hover:shadow-red-900/40 cursor-pointer"
+            >
+              <span>Get a quote</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
 
-            <Magnetic strength={0.2}>
-              <a
-                href="#selected-work"
-                onClick={(e) => {
-                  e.preventDefault();
-                  smoothScrollTo('#selected-work', -80);
-                }}
-                className="font-poppins font-semibold text-xs sm:text-sm text-white border-2 border-white/80 hover:border-white hover:bg-white/10 active:scale-95 px-6 sm:px-8 py-3.5 sm:py-4 rounded-full inline-flex items-center justify-center transition-all cursor-pointer"
-              >
-                <span>See our work</span>
-              </a>
-            </Magnetic>
+            <a
+              href="#selected-work"
+              onClick={(e) => {
+                e.preventDefault();
+                smoothScrollTo('#selected-work', -80);
+              }}
+              className="w-full md:w-auto h-[52px] font-poppins font-semibold text-sm text-white border-2 border-white/80 hover:border-white hover:bg-white/10 active:scale-[0.98] px-7 rounded-full inline-flex items-center justify-center transition-all cursor-pointer"
+            >
+              <span>See our work</span>
+            </a>
           </div>
         </div>
       </div>
 
-      {/* Photo Slider Controls at Bottom Right (only when multiple projects exist) */}
+      {/* Photo Slider Controls: 16px margin (bottom-4 right-4), outside card, away from text */}
       {FEATURED_PROJECTS.length > 1 && (
-        <div className="absolute top-26 right-3 sm:top-auto sm:bottom-6 sm:right-6 z-30 flex items-center gap-2 sm:gap-3 max-w-[calc(100%-24px)]">
+        <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-30 flex items-center gap-2 sm:gap-3">
           {/* Slide Dots */}
           <div
-            className="hidden md:flex items-center gap-1.5 px-2.5 py-2 rounded-full bg-[#15171A]/55 backdrop-blur-[18px] border border-white/12 shadow-lg"
+            className="flex items-center gap-1.5 px-2.5 py-2 rounded-full bg-[#15171A]/65 backdrop-blur-[18px] border border-white/15 shadow-lg"
             role="tablist"
             aria-label="Featured projects"
           >
@@ -303,7 +299,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
             <button
               type="button"
               onClick={handlePrev}
-              className="w-11 h-11 rounded-full bg-[#15171A]/55 backdrop-blur-[18px] border border-white/12 text-white hover:bg-white/20 active:scale-95 flex items-center justify-center transition-all cursor-pointer shadow-lg"
+              className="w-11 h-11 rounded-full bg-[#15171A]/65 backdrop-blur-[18px] border border-white/15 text-white hover:bg-white/20 active:scale-95 flex items-center justify-center transition-all cursor-pointer shadow-lg"
               aria-label="Previous project photo"
               title="Previous project"
             >
@@ -312,7 +308,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
             <button
               type="button"
               onClick={handleNext}
-              className="w-11 h-11 rounded-full bg-[#15171A]/55 backdrop-blur-[18px] border border-white/12 text-white hover:bg-white/20 active:scale-95 flex items-center justify-center transition-all cursor-pointer shadow-lg"
+              className="w-11 h-11 rounded-full bg-[#15171A]/65 backdrop-blur-[18px] border border-white/15 text-white hover:bg-white/20 active:scale-95 flex items-center justify-center transition-all cursor-pointer shadow-lg"
               aria-label="Next project photo"
               title="Next project"
             >

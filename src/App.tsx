@@ -33,6 +33,7 @@ export default function App() {
     client: string;
     specs: string;
     image: string;
+    images?: string[];
     materials?: string;
     category?: string;
     leadTime?: string;
@@ -115,6 +116,7 @@ export default function App() {
     client: string;
     specs: string;
     image: string;
+    images?: string[];
     materials?: string;
     category?: string;
     leadTime?: string;

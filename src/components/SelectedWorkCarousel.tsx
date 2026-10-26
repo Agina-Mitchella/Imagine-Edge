@@ -7,6 +7,8 @@ import {
   ShoppingBag,
   Briefcase,
   Sparkles,
+  Package,
+  FileText,
 } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -20,6 +22,7 @@ interface SelectedWorkCarouselProps {
     client: string;
     specs: string;
     image: string;
+    images?: string[];
     materials?: string;
     category?: string;
     leadTime?: string;
@@ -221,7 +224,9 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
     'Drinkware',
     'Banners',
     'Bags',
+    'Packaging',
     'Desk items',
+    'Print & stationery',
   ];
 
   const filteredCards = (
@@ -229,6 +234,13 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
       ? SELECTED_WORK_CARDS
       : SELECTED_WORK_CARDS.filter((c) => c.filterCategory === selectedFilter)
   ).filter((c) => Boolean(c.image && c.image.trim() !== ''));
+
+  // Helper to calculate exact scroll distance per card (card width + 20px gap)
+  const getScrollStep = () => {
+    const track = cardsTrackRef.current;
+    const firstCard = track?.querySelector<HTMLElement>('.selected-work-card');
+    return firstCard ? firstCard.offsetWidth + 20 : (window.innerWidth < 640 ? 280 : 320);
+  };
 
   // Monitor scroll position to update arrows and progress counter
   const updateScrollState = () => {
@@ -243,8 +255,8 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
     const progress = maxScroll > 0 ? Math.min(100, Math.max(0, (scrollLeft / maxScroll) * 100)) : 100;
     setProgressPercent(progress);
 
-    // Approximate active card count
-    const cardStep = window.innerWidth < 640 ? 324 : 404; // width + gap
+    // Active card index based on dynamic card step
+    const cardStep = getScrollStep();
     const index = Math.min(
       filteredCards.length,
       Math.max(1, Math.round(scrollLeft / cardStep) + 1)
@@ -342,8 +354,10 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
       client: card.client,
       specs: card.specs || '',
       image: card.image || '',
+      images: card.images,
       category: card.category,
       materials: card.materials,
+      leadTime: card.leadTime,
     });
   };
 
@@ -380,8 +394,12 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
         return <Flag {...iconProps} />;
       case 'bags':
         return <ShoppingBag {...iconProps} />;
+      case 'packaging':
+        return <Package {...iconProps} />;
       case 'desk items':
         return <Briefcase {...iconProps} />;
+      case 'print & stationery':
+        return <FileText {...iconProps} />;
       default:
         return <Sparkles {...iconProps} />;
     }
@@ -392,7 +410,7 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
       ref={sectionRef}
       id="selected-work"
       data-header-theme="light"
-      className="relative w-full bg-offwhite text-charcoal py-[64px] lg:py-[96px] overflow-hidden select-none"
+      className="relative w-full bg-offwhite text-charcoal py-[48px] md:py-[72px] overflow-hidden select-none"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hidden Measurer for Exact Fit-Text Widths */}
@@ -565,7 +583,7 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               type="button"
-              onClick={() => scrollByAmount(window.innerWidth < 640 ? -320 : -404)}
+              onClick={() => scrollByAmount(-getScrollStep())}
               disabled={isAtStart}
               aria-label="Previous items"
               className="w-[36px] h-[36px] sm:w-[44px] sm:h-[44px] rounded-full bg-white border border-[#E8E1DA] flex items-center justify-center transition-opacity text-charcoal hover:bg-slate-50 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red"
@@ -574,7 +592,7 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
             </button>
             <button
               type="button"
-              onClick={() => scrollByAmount(window.innerWidth < 640 ? 296 : 404)}
+              onClick={() => scrollByAmount(getScrollStep())}
               disabled={isAtEnd}
               aria-label="Next items"
               className="w-[36px] h-[36px] sm:w-[44px] sm:h-[44px] rounded-full bg-white border border-[#E8E1DA] flex items-center justify-center transition-opacity text-charcoal hover:bg-slate-50 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red active:scale-95"
@@ -584,7 +602,7 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
           </div>
         </div>
 
-        {/* Drag & Fast Momentum Carousel Track: 16px gap on mobile with snap-points for high-speed flicking */}
+        {/* Drag & Fast Momentum Carousel Track: 20px gap between cards */}
         <div
           ref={cardsTrackRef}
           onMouseDown={handleMouseDown}
@@ -596,7 +614,7 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchEnd}
           style={{ WebkitOverflowScrolling: 'touch' }}
-          className={`flex items-stretch gap-[16px] sm:gap-[24px] overflow-x-auto no-scrollbar scroll-smooth py-3 px-1 will-change-scroll overscroll-x-contain snap-x snap-mandatory sm:snap-none ${
+          className={`flex items-stretch gap-[20px] overflow-x-auto no-scrollbar scroll-smooth py-3 px-1 will-change-scroll overscroll-x-contain snap-x snap-mandatory sm:snap-none ${
             isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
           }`}
         >
@@ -607,25 +625,30 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
               tabIndex={0}
               role="button"
               aria-label={`View ${card.title}`}
-              className="selected-work-card group w-[275px] sm:w-[380px] shrink-0 flex flex-col rounded-[16px] overflow-hidden bg-white border border-[#E8E1DA] shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(0,0,0,0.09)] active:scale-[0.985] transition-all duration-200 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red snap-start sm:snap-align-none select-none cursor-pointer"
+              className="selected-work-card group shrink-0 flex flex-col rounded-[16px] overflow-hidden bg-white border border-[#EEEAE5] shadow-[0_6px_20px_rgba(0,0,0,0.05)] hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] active:scale-[0.985] transition-all duration-200 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red snap-start select-none cursor-pointer"
             >
-              {/* 4:5 Showcase Slot: Fits entire product cleanly with zero clipping and high clarity */}
-              <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#FAF9F6] border-b border-[#E8E1DA]/60 flex items-center justify-center p-3 sm:p-5">
+              {/* Square (1:1) Image Frame, pure white #FFFFFF background, 12px padding, image centred */}
+              <div className="relative aspect-square w-full overflow-hidden bg-[#FFFFFF] border-b border-[#EEEAE5] flex items-center justify-center p-[12px]">
+                {card.badge && (
+                  <span className="absolute top-2.5 right-2.5 z-10 px-2.5 py-1 rounded-full bg-[#15171A]/85 backdrop-blur-xs text-white text-[11px] font-medium font-poppins shadow-sm">
+                    {card.badge}
+                  </span>
+                )}
                 <img
                   src={card.image}
                   alt={card.title}
                   loading="lazy"
                   decoding="async"
-                  className="max-h-full max-w-full w-auto h-auto object-contain object-center transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+                  className="w-full h-full object-contain object-center transition-transform duration-300 ease-out group-hover:scale-[1.03]"
                 />
               </div>
 
-              {/* Compact Text Block: 20px padding, category in 12px uppercase Poppins Medium, title in 18px Poppins SemiBold */}
-              <div className="p-[20px] flex flex-col justify-center bg-white">
-                <span className="text-[12px] font-medium font-poppins uppercase tracking-wider text-[#B52026] mb-1.5 block">
+              {/* Text Block: 16px padding. Category: 11px uppercase #B52026, title: 16px Poppins SemiBold, max two lines */}
+              <div className="p-4 flex flex-col justify-center bg-white">
+                <span className="text-[11px] font-medium font-poppins uppercase tracking-[0.08em] text-[#B52026] mb-1 block">
                   {card.category}
                 </span>
-                <h3 className="text-[18px] font-semibold font-poppins text-[#1B1416] leading-snug line-clamp-2">
+                <h3 className="text-[16px] font-semibold font-poppins text-[#1B1416] leading-[1.3] line-clamp-2 m-0 p-0">
                   {card.title}
                 </h3>
               </div>

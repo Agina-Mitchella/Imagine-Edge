@@ -179,3 +179,17 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Selected Work card responsive width */
+.selected-work-card {
+  width: 78vw;
+  max-width: 320px;
+}
+
+@media (min-width: 768px) {
+  .selected-work-card {
+    width: clamp(280px, 25vw, 340px);
+    max-width: none;
+  }
+}
+
