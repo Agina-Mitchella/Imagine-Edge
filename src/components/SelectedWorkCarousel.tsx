@@ -27,10 +27,22 @@ interface SelectedWorkCarouselProps {
     category?: string;
     leadTime?: string;
   }) => void;
+  activeFilter?: string;
+  onFilterChange?: (filter: string) => void;
 }
 
-export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOpenLightbox }) => {
-  const [selectedFilter, setSelectedFilter] = useState('All');
+export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({
+  onOpenLightbox,
+  activeFilter,
+  onFilterChange,
+}) => {
+  const [selectedFilter, setSelectedFilter] = useState(activeFilter || 'All');
+
+  useEffect(() => {
+    if (activeFilter) {
+      setSelectedFilter(activeFilter);
+    }
+  }, [activeFilter]);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftState, setScrollLeftState] = useState(0);
@@ -226,7 +238,7 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
     'Bags',
     'Packaging',
     'Desk items',
-    'Print & stationery',
+    'Paper & stationery',
   ];
 
   const filteredCards = (
@@ -398,7 +410,7 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
         return <Package {...iconProps} />;
       case 'desk items':
         return <Briefcase {...iconProps} />;
-      case 'print & stationery':
+      case 'paper & stationery':
         return <FileText {...iconProps} />;
       default:
         return <Sparkles {...iconProps} />;
@@ -566,7 +578,10 @@ export const SelectedWorkCarousel: React.FC<SelectedWorkCarouselProps> = ({ onOp
                 <button
                   key={filter}
                   type="button"
-                  onClick={() => setSelectedFilter(filter)}
+                  onClick={() => {
+                    setSelectedFilter(filter);
+                    onFilterChange?.(filter);
+                  }}
                   className={`px-[18px] py-[10px] rounded-full text-[14px] font-medium font-poppins whitespace-nowrap cursor-pointer transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red ${
                     isActive
                       ? 'bg-[#B52026] text-white border border-[#B52026]'

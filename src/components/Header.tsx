@@ -11,9 +11,10 @@ interface HeaderProps {
   onOpenQuote: (preselectedCategory?: string) => void;
   onOpenProfile: () => void;
   onOpenLogoUpload?: () => void;
+  hasAnnouncementBar?: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenQuote, hasAnnouncementBar }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<HeaderTheme>('dark');
   const [isVisible, setIsVisible] = useState(true);
@@ -193,11 +194,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
     <>
       {/* Compact Floating Bar Header */}
       <header
-        className={`fixed top-3 inset-x-3 max-w-[1280px] mx-auto z-40 rounded-2xl h-14 lg:h-16 px-4 sm:px-6 flex items-center justify-between transition-all duration-300 font-poppins select-none ${
+        className={`fixed ${hasAnnouncementBar ? 'top-[48px]' : 'top-3'} inset-x-3 max-w-[1280px] mx-auto z-40 rounded-2xl h-14 lg:h-16 px-4 sm:px-6 flex items-center justify-between transition-all duration-300 font-poppins select-none ${
           currentStyles.container
         } ${
           !isVisible && !mobileMenuOpen
-            ? '-translate-y-[130%] pointer-events-none'
+            ? '-translate-y-[150%] pointer-events-none'
             : 'translate-y-0 pointer-events-auto'
         }`}
         style={{

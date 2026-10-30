@@ -17,6 +17,7 @@ import { LogoUploadModal } from './components/LogoUploadModal';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { ProgressBar } from './components/ProgressBar';
 import { CustomCursor } from './components/CustomCursor';
+import { ChristmasAnnouncementBar, ChristmasOfferSection } from './components/ChristmasOffer';
 import { setGlobalLenis, smoothScrollTo } from './utils/scrollHelper';
 import { MOTION_CONFIG } from './config/motionConfig';
 
@@ -27,6 +28,7 @@ export default function App() {
   const [quoteCategory, setQuoteCategory] = useState<string | undefined>(undefined);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLogoUploadOpen, setIsLogoUploadOpen] = useState(false);
+  const [hasAnnouncementBar, setHasAnnouncementBar] = useState(false);
 
   const [lightboxItem, setLightboxItem] = useState<{
     title: string;
@@ -143,11 +145,15 @@ export default function App() {
       {/* Desktop Custom Cursor */}
       <CustomCursor />
 
+      {/* Christmas Sale Announcement Bar (Slim 40px #921B1D bar above header) */}
+      <ChristmasAnnouncementBar onVisibilityChange={setHasAnnouncementBar} />
+
       {/* 1. HEADER: floating compact bar with dynamic section-based theme switching */}
       <Header
         onOpenQuote={() => handleOpenQuote()}
         onOpenProfile={() => setIsProfileOpen(true)}
         onOpenLogoUpload={() => setIsLogoUploadOpen(true)}
+        hasAnnouncementBar={hasAnnouncementBar}
       />
 
       {/* Main Content Sections (Strict Page Structure Order - Clean Hard Edges) */}
@@ -156,6 +162,12 @@ export default function App() {
         <Hero
           onOpenQuote={() => handleOpenQuote()}
           onOpenLightbox={handleOpenLightbox}
+        />
+
+        {/* Christmas Offer Section */}
+        <ChristmasOfferSection
+          onOpenLightbox={handleOpenLightbox}
+          onOpenQuote={handleOpenQuote}
         />
 
         {/* 3. WHAT WE MAKE: crimson icon grid */}

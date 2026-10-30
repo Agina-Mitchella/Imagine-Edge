@@ -8,6 +8,7 @@ import {
   Umbrella,
   BookOpen,
   Award,
+  FileText,
 } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -150,6 +151,8 @@ export const WhatWeMake: React.FC<WhatWeMakeProps> = ({ onSelectCategory }) => {
         return <BookOpen {...iconProps} />;
       case 'Award':
         return <Award {...iconProps} />;
+      case 'FileText':
+        return <FileText {...iconProps} />;
       default:
         return <Award {...iconProps} />;
     }
